@@ -28,7 +28,7 @@ class Minesweeper:
 
     def _init_board_r(self):
 
-        board = [[Tile() for _ in range(self.cols)] for __ in range(self.rows)]
+        board = [[Tile(row, col) for col in range(self.cols)] for row in range(self.rows)]
         self._populate_bombs(board)
         self._find_neighbors(board)
         self._set_display(board)
@@ -72,6 +72,7 @@ class Minesweeper:
         return board
 
     def __repr__(self):
+        print("\033c")
         return str(self)
         
     def __str__(self):
@@ -86,17 +87,33 @@ class Minesweeper:
         if self.board[row][col].is_bomb:
             self.lost_game = True
             if self.human_player:
-                self.display(True)
+                print('Game over.')
         elif self.human_player:
-            self.display()
+            if self.board[row][col].neighbors == 0:
+                self.clear_path(self.board[row][col])
+
+    def clear_path(self, tile):
         
-    def display(self, lost=False):
-        if lost:
-            print("game over")
+        tiles_to_check = [tile]
 
-    def clear_path(self):
-        pass
+        for tile in tiles_to_check:        
 
+            surrounding_tiles = [(tile.row-1, tile.col-1), (tile.row-1, tile.col), (tile.row-1, tile.col+1), (tile.row, tile.col-1), (tile.row, tile.col+1), (tile.row+1, tile.col-1), (tile.row+1, tile.col), (tile.row+1, tile.col+1)]
+
+            for pos in surrounding_tiles:
+                
+                _row, _col = pos
+
+                if not (0 <= _row < self.rows) or not (0 <= _col < self.cols):
+                    continue
+
+                print(f"{_row} {_col}")
+
+                if not self.board[_row][_col].is_bomb:
+                    self.board[_row][_col].is_clicked = True
+                    if self.board[_row][_col].neighbors == 0 and not self.board[_row][_col] in tiles_to_check:
+                        tiles_to_check.append(self.board[_row][_col])
+            
 
 if __name__ == "__main__":
     m = Minesweeper()
@@ -105,4 +122,3 @@ if __name__ == "__main__":
         user_input = input("enter corrdinates: ")
         row, col = int(user_input[0]), int(user_input[2])
         m.make_move(row, col)
-        print("\033c")

@@ -1,8 +1,10 @@
 class Tile:
-    def __init__(self, neighbors=None, is_bomb=False, is_display=False):
+    def __init__(self, row, col, neighbors=None, is_bomb=False, is_display=False):
         self.neighbors: int = neighbors
         self.is_bomb: bool = is_bomb
         self.is_clicked: bool = False
+        self.row = row
+        self.col = col
 
     def __repr__(self):
         if not self.is_clicked:
